@@ -36,8 +36,10 @@ void droidboot_internal_boot_linux_from_ram(void *kernel_raw, off_t kernel_raw_s
 void droidboot_internal_pre_ramdisk_load(void *kernel_raw, off_t kernel_raw_size);
 void *droidboot_internal_get_kernel_load_addr(void);
 void *droidboot_internal_get_ramdisk_load_addr(void);
-// unsigned char *droidboot_internal_get_dtb_load_addr(void);
+void *droidboot_internal_get_dtb_load_addr(void);
+void *droidboot_internal_get_dtbo_load_addr(void);
 bool droidboot_internal_append_ramdisk_to_kernel(void);
 
 int droidboot_internal_get_disp_buffer_height(void);
 bool droidboot_internal_use_double_buffering(void);
+void droidboot_internal_platform_tasks();

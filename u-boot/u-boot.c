@@ -2,6 +2,7 @@
 #include <droidboot_drivers.h>
 #include <droidboot_logging.h>
 #include <droidboot_main.h>
+#include <droidboot_platform_common.h>
 
 #include <common.h>
 #include <command.h>
@@ -204,32 +205,37 @@ void droidboot_internal_pre_ramdisk_load(void *kernel_raw, off_t kernel_raw_size
 
 void *droidboot_internal_get_kernel_load_addr()
 {
-    return env_get_ulong("kernel_addr_r", 16, 0);
+    return (void *)env_get_ulong("kernel_addr_r", 16, 0);
 }
 
 void *droidboot_internal_get_ramdisk_load_addr()
 {
-    return env_get_ulong("ramdisk_addr_r", 16, 0);
+    return (void *)env_get_ulong("ramdisk_addr_r", 16, 0);
 }
 
 void *droidboot_internal_get_dtb_load_addr()
 {
-    return env_get_ulong("fdt_addr_r", 16, 0);
+    return (void *)env_get_ulong("fdt_addr_r", 16, 0);
 }
 
+void *droidboot_internal_get_dtbo_load_addr()
+{
+    return (void *)env_get_ulong("fdtoverlay_addr_r", 16, 0);
+}
 
 // fuction to boot linux from ram
 void droidboot_internal_boot_linux_from_ram(void *kernel_raw, off_t kernel_raw_size, void *ramdisk_raw, off_t ramdisk_size, void *dtb_raw, off_t dtb_raw_size, void *dtbo_raw, off_t dtbo_raw_size, char *options)
 {
+    char kernel_size_str[32];  // Buffer to hold the string representation of kernel_raw_size
+    sprintf(kernel_size_str, "%ld", kernel_raw_size);  // Convert kernel_raw_size to a string
     env_set("bootargs", options);
     env_set("kernel_comp_addr_r", droidboot_internal_get_kernel_load_addr()+kernel_raw_size);
-    env_set("kernel_comp_size", kernel_raw_size);
+    env_set("kernel_comp_size", kernel_size_str);
     char *argv[4] = {"booti", kernel_raw, ramdisk_raw, dtb_raw};
     struct cmd_tbl cmdtb;
     cmdtb.name="booti";
     cmdtb.maxargs=255;
     do_booti(&cmdtb, 0, 4, argv);
-	return -1; //something went wrong
 }
 
 bool droidboot_internal_append_ramdisk_to_kernel()
